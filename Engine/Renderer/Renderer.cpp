@@ -98,7 +98,7 @@ namespace nu
             color_target_info.store_op = SDL_GPU_STOREOP_STORE;
 
             m_renderPass = SDL_BeginGPURenderPass(m_commandBuffer, &color_target_info, 1, nullptr);
-            SDL_EndGPURenderPass(m_renderPass);
+            //SDL_EndGPURenderPass(m_renderPass);
         }
 
         return true;
@@ -106,13 +106,13 @@ namespace nu
 
     bool Renderer::EndFrame() const
     {
+        SDL_EndGPURenderPass(m_renderPass);
         if (!SDL_SubmitGPUCommandBuffer(m_commandBuffer))
         {
             std::cerr << "Could not submit command buffer: " << SDL_GetError() << std::endl;
             return false;
         }
 
-        //SDL_EndGPURenderPass(m_renderPass);
         return true;
     }
 
@@ -217,7 +217,7 @@ namespace nu
     {
         // describe which buffer to bind and where to start reading from
         SDL_GPUBufferBinding binding{
-            .buffer = {}, // todo: the vertex buffer's gpu buffer
+            .buffer = vertexBuffer.m_gpuBuffer, // todo: the vertex buffer's gpu buffer
             .offset = 0   // start reading at the beginning of the buffer
         };
 
