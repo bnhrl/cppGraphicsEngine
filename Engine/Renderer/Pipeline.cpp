@@ -103,4 +103,9 @@ namespace nu
 		// add the attribute to m_vertexAttributes
 		m_vertexAttributes.push_back(attribute);
 	}
+
+	/*void Pipeline::AddIndexBuffer()
+	{
+
+	}*/
 }
