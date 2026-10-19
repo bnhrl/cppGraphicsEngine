@@ -5,6 +5,7 @@
 #include "Renderer/Pipeline.h"
 #include "Renderer/Shader.h"
 #include "Resources/ResourceManager.h"
+#include "Math/Transform.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -59,6 +60,7 @@ int main()
     };
 
     vertexUniform uniform;
+    Transform transform;
 
     auto pipeline = std::make_shared<Pipeline>();
     pipeline->AddVertexBuffer(sizeof(Vertex));
@@ -113,12 +115,8 @@ int main()
 
         cameraPosition += direction * 4.0f * dt;
 
-        // SHADER??
-
-        auto mxt = glm::translate(glm::vec3(0.75f, 0.0f, 0.0f));
-        auto mxr = glm::eulerAngleXYZ(0.0f, 0.0f, time * 3.0f);
-        auto mxs = glm::scale(glm::vec3(0.5f, 0.5f, 0.5f));
-        auto model = mxt * mxr * mxs;
+        // TRANSFORM
+        transform.rotation.z = time;
 
         // VIEW MATRIX
         auto view = glm::lookAtRH(cameraPosition, glm::vec3{0}, glm::vec3{0, 1, 0});
@@ -128,7 +126,7 @@ int main()
         float aspect = Engine::Instance().GetRenderer().GetWidth() / (float)Engine::Instance().GetRenderer().GetHeight();
         auto projection = glm::perspectiveRH(glm::radians(70.0f), aspect, 0.01f, 20.0f);
 
-        uniform.mvp = projection * view * model;
+        uniform.mvp = projection * view * transform.GetMatrix();
 
         // RENDER
         Engine::Instance().GetRenderer().BeginFrame();
