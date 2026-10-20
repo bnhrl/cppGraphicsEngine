@@ -16,7 +16,7 @@ struct Output
 Output main(Input input)
 {
     Output output;
-    output.color = color * input.texcoord;
+    output.color = color;
 
     return output;
 }

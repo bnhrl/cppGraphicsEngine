@@ -4,6 +4,7 @@
 #include "Renderer/IndexBuffer.h"
 #include "Renderer/Pipeline.h"
 #include "Renderer/Shader.h"
+#include "Renderer/Model.h"
 #include "Resources/ResourceManager.h"
 #include "Math/Transform.h"
 
@@ -51,8 +52,27 @@ int main()
     ib->Create(indices, Engine::Instance().GetRenderer());
 
 
-    auto vshader = Resources().Get<nu::Shader>("shaders/position.vert", Engine::Instance().GetRenderer(), 1);
-    auto fshader = Resources().Get<nu::Shader>("shaders/color.frag", Engine::Instance().GetRenderer(), 1);
+    //auto vshader = Resources().Get<nu::Shader>("shaders/position.vert", Engine::Instance().GetRenderer(), 1);
+    //auto fshader = Resources().Get<nu::Shader>("shaders/color.frag", Engine::Instance().GetRenderer(), 1);
+
+    glm::vec3 cameraPosition{ 0, 0, 5 };
+
+    auto model = Resources().Get<Model>("models/teapot.obj", Engine::Instance().GetRenderer());
+
+    auto vshader = Resources().Get<nu::Shader>("shaders/unlit.vert", Engine::Instance().GetRenderer(), 1);
+    auto fshader = Resources().Get<nu::Shader>("shaders/unlit.frag", Engine::Instance().GetRenderer(), 1);
+
+    auto pipeline = std::make_shared<Pipeline>();
+
+    pipeline->AddVertexBuffer(sizeof(Model::Vertex));
+    pipeline->AddVertexAttribute(0, SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, offsetof(Model::Vertex, position));
+    pipeline->AddVertexAttribute(1, SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2, offsetof(Model::Vertex, texcoord));
+    pipeline->AddVertexAttribute(2, SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, offsetof(Model::Vertex, normal));
+    pipeline->AddVertexAttribute(3, SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, offsetof(Model::Vertex, tangent));
+
+    pipeline->Create(*vshader.get(), *fshader.get(),
+        Engine::Instance().GetRenderer().GetGPUDevice(),
+        Engine::Instance().GetRenderer().GetWindow());
 
     struct vertexUniform
     {
@@ -62,25 +82,24 @@ int main()
     vertexUniform uniform;
     Transform transform;
 
-    auto pipeline = std::make_shared<Pipeline>();
-    pipeline->AddVertexBuffer(sizeof(Vertex));
-    // position
-    pipeline->AddVertexAttribute(
-        0,
-        SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
-        offsetof(Vertex, position.x));
-    // color
-    pipeline->AddVertexAttribute(
-        1,
-        SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
-        offsetof(Vertex, color));
+    //auto pipeline = std::make_shared<Pipeline>();
+    //pipeline->AddVertexBuffer(sizeof(Vertex));
+    //// position
+    //pipeline->AddVertexAttribute(
+    //    0,
+    //    SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+    //    offsetof(Vertex, position.x));
+    //// color
+    //pipeline->AddVertexAttribute(
+    //    1,
+    //    SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
+    //    offsetof(Vertex, color));
 
-    pipeline->Create(*vshader.get(), *fshader.get(),
-        Engine::Instance().GetRenderer().GetGPUDevice(),
-        Engine::Instance().GetRenderer().GetWindow()
-    );
+    //pipeline->Create(*vshader.get(), *fshader.get(),
+    //    Engine::Instance().GetRenderer().GetGPUDevice(),
+    //    Engine::Instance().GetRenderer().GetWindow()
+    //);
 
-    glm::vec3 cameraPosition{ 0, 0, 5 };
 
     // MAIN LOOP
     bool quit = false;
@@ -105,7 +124,7 @@ int main()
         float dt = Engine::Instance().GetTime().GetDeltaTime();
         float time = Engine::Instance().GetTime().GetTime();
 
-        //Color4 color{ 0, sin(time)+1.0f, 0,1 };
+        Color4 color{ 0, sin(time)+1.0f, 0,1 };
 
         glm::vec3 direction{ 0 };
         if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_W)) direction.z = 1;
@@ -132,14 +151,10 @@ int main()
         Engine::Instance().GetRenderer().BeginFrame();
 
         Engine::Instance().GetRenderer().SetPipeline(*pipeline);
-        Engine::Instance().GetRenderer().SetVertexBuffer(*vb);
-        Engine::Instance().GetRenderer().SetIndexBuffer(*ib);
         Engine::Instance().GetRenderer().SetVertexUniform(0, &uniform, sizeof(uniform));
-        //Engine::Instance().GetRenderer().SetFragmentUniform(0, &color, sizeof(color));
+        Engine::Instance().GetRenderer().SetFragmentUniform(0, &color, sizeof(color));
 
-
-        //Engine::Instance().GetRenderer().Draw(vb->GetVertexCount());
-        Engine::Instance().GetRenderer().DrawIndex(*ib);
+        model->Draw(Engine::Instance().GetRenderer());
 
         Engine::Instance().GetRenderer().EndFrame();
     }
