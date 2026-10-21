@@ -5,6 +5,7 @@
 #include "Renderer/Pipeline.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Model.h"
+#include "Renderer/Texture.h"
 #include "Resources/ResourceManager.h"
 #include "Math/Transform.h"
 
@@ -55,12 +56,13 @@ int main()
     //auto vshader = Resources().Get<nu::Shader>("shaders/position.vert", Engine::Instance().GetRenderer(), 1);
     //auto fshader = Resources().Get<nu::Shader>("shaders/color.frag", Engine::Instance().GetRenderer(), 1);
 
-    glm::vec3 cameraPosition{ 0, 0, 5 };
+    glm::vec3 cameraPosition{ 0, 0, 0 };
 
-    auto model = Resources().Get<Model>("models/teapot.obj", Engine::Instance().GetRenderer());
+    auto model = Resources().Get<Model>("models/spot.obj", Engine::Instance().GetRenderer());
+    auto texture = Resources().Get<Texture>("textures/spot_diffuse.png", Engine::Instance().GetRenderer());
 
     auto vshader = Resources().Get<nu::Shader>("shaders/unlit.vert", Engine::Instance().GetRenderer(), 1);
-    auto fshader = Resources().Get<nu::Shader>("shaders/unlit.frag", Engine::Instance().GetRenderer(), 1);
+    auto fshader = Resources().Get<nu::Shader>("shaders/unlit.frag", Engine::Instance().GetRenderer(), 1, 1);
 
     auto pipeline = std::make_shared<Pipeline>();
 
@@ -124,7 +126,7 @@ int main()
         float dt = Engine::Instance().GetTime().GetDeltaTime();
         float time = Engine::Instance().GetTime().GetTime();
 
-        Color4 color{ 0, sin(time)+1.0f, 0,1 };
+        Color4 color{ 1.0, sin(time)+1.0f, 0,1 };
 
         glm::vec3 direction{ 0 };
         if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_W)) direction.z = 1;
@@ -143,7 +145,7 @@ int main()
 
         // PROJECTION MATRIX
         float aspect = Engine::Instance().GetRenderer().GetWidth() / (float)Engine::Instance().GetRenderer().GetHeight();
-        auto projection = glm::perspectiveRH(glm::radians(70.0f), aspect, 0.01f, 20.0f);
+        auto projection = glm::perspectiveRH(glm::radians(90.0f), aspect, 0.01f, 20.0f);
 
         uniform.mvp = projection * view * transform.GetMatrix();
 
@@ -153,6 +155,7 @@ int main()
         Engine::Instance().GetRenderer().SetPipeline(*pipeline);
         Engine::Instance().GetRenderer().SetVertexUniform(0, &uniform, sizeof(uniform));
         Engine::Instance().GetRenderer().SetFragmentUniform(0, &color, sizeof(color));
+        Engine::Instance().GetRenderer().SetFragmentTexture(0, *texture);
 
         model->Draw(Engine::Instance().GetRenderer());
 
