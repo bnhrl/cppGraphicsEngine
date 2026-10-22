@@ -206,7 +206,7 @@ namespace nu
     {
         // describe which buffer to bind and where to start reading from
         SDL_GPUBufferBinding binding{
-            .buffer = vertexBuffer.m_gpuBuffer, // todo: the vertex buffer's gpu buffer
+            .buffer = vertexBuffer.m_gpuBuffer, // the vertex buffer's gpu buffer
             .offset = 0   // start reading at the beginning of the buffer
         };
 
@@ -228,7 +228,7 @@ namespace nu
     {
         // describe which buffer to bind and where to start reading from
         SDL_GPUBufferBinding binding{
-            .buffer = indexBuffer.m_gpuBuffer, // todo: the index buffer's gpu buffer
+            .buffer = indexBuffer.m_gpuBuffer, // the index buffer's gpu buffer
             .offset = 0   // start reading at the beginning of the buffer
         };
 
