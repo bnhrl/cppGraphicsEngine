@@ -9,7 +9,7 @@ cbuffer Uniforms : register(b0, space3)
 struct Input
 {
     float2 texcoord : TEXTCOORD0;
-    float4 diffuse : TEXCOORD1;
+    float3 diffuse : TEXCOORD1;
 };
 
 struct Output
