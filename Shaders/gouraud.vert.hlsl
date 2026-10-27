@@ -1,9 +1,11 @@
 #include "Lighting.hlsli"
 
-cbuffer Uniforms : register(b0, space1)
+cbuffer VertexUniforms : register(b0, space1)
 {
     float4x4 mvp;
     float4x4 model;
+    float3 cameraPosition;
+    float padding1;
 };
 
 cbuffer LightUniforms : register(b1, space1)
@@ -38,30 +40,29 @@ Output main(Input input)
     output.position = mul(mvp, float4(input.position, 1.0f));
 
     float3 worldPosition = mul(model, float4(input.position, 1.0f)).xyz;
+    float3 radiance = light.color * light.intensity;
     
-    // DIFFUSE
+    float attentuation;
+    float3 l = getLightVector(light, worldPosition, attentuation);
     float3 n = normalize(mul((float3x3)model, input.normal));
     
-    float3 l;
-    if (light.type == LIGHT_DIRECTIONAL)
-    {
-        l = -normalize(light.direction);
-    }
-    else if (light.type == LIGHT_POINT)
-    {
-        l = normalize(light.position - worldPosition);
-    }
     
+    // DIFFUSE
     float nDotL = saturate(dot(n, l));
-    
-    float3 diffuse = light.color * light.intensity * nDotL;
+    float3 diffuse = radiance * nDotL * attentuation;
     output.diffuse = diffuse + light.ambient;
     
-    if (nDotL)
+    
+    // SPECULAR
+    output.specular = float3(0.0f, 0.0f, 0.0f);
+    if (nDotL > 0)
     {
-        float shininess = 16.0f;
-        float3 r = reflect(-l, n) * shininess;
-        
+        float3 r = reflect(-l, n);
+        float3 v = normalize(cameraPosition - worldPosition);
+        float3 h = normalize(v + l);
+        float3 hDotN = saturate(dot(h, n));
+        hDotN = pow(hDotN, material.shininess);
+        output.specular = radiance * hDotN * attentuation;
     }
     
     return output;

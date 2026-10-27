@@ -87,6 +87,8 @@ int main()
     {
         glm::mat4 mvp;
         glm::mat4 model;
+        glm::vec3 cameraPosition;
+        float padding1;
     };
     
     struct LightUniform 
@@ -94,35 +96,40 @@ int main()
         glm::vec3 position;
         LightType type;
         glm::vec3 direction;
-        float padding2;
+        float innerCutoff{ 0.05f };
         glm::vec3 color;
         float intensity;
         glm::vec3 ambient;
-        float padding3;
+        float outerCutoff{ 1.5f };
     };
 
     struct MaterialUniform
     {
-        glm::vec2 tiling;
-        glm::vec2 offset;
+        glm::vec4 color{ 1.f, 1.f, 1.f, 1.f };
+        glm::vec2 tiling{ 1.f };
+        glm::vec2 offset{ 0.f };
+        float shininess{ 1.0f };
     };
+
 
     VertexUniform vertexUniform;
 
     LightUniform lightUniform
     {
-        .position{10, 10, 10},
-        .type{LightType::Point},
+        .position{0, 5, 0},
+        .type{LightType::Spot},
         .direction{0, -1, 0},
-        .color{0.5, 1.0, 0.5},
-        .intensity{0.5},
-        .ambient{0.9f}
+        .color{0.5f, 1.0f, 0.5f},
+        .intensity{1.0f},
+        .ambient{0.25f}
     };
 
     MaterialUniform materialUniform
     {
+        .color{1.f, 0.5f, 0.0f, 1.0f},
         .tiling{ 1.f},
-        .offset{ 0.f, 0.f }
+        .offset{ 0.f, 0.f },
+        .shininess{ 128.0f }
     };
 
     Transform transform;
@@ -160,6 +167,10 @@ int main()
         if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_S)) direction.z = -1;
         if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
 
+        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_F)) lightUniform.type = LightType::Directional;
+        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_G)) lightUniform.type = LightType::Point;
+        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_H)) lightUniform.type = LightType::Spot;
+
         cameraPosition += direction * 4.0f * dt;
         //materialUniform.offset.x = time * 0.333f;
 
@@ -177,15 +188,18 @@ int main()
         // MVP
         vertexUniform.model = transform.GetMatrix();
         vertexUniform.mvp = projection * view * vertexUniform.model;
+        vertexUniform.cameraPosition = cameraPosition;
 
         // RENDER
         Engine::Instance().GetRenderer().BeginFrame();
 
         Engine::Instance().GetRenderer().SetPipeline(*pipeline);
+
         Engine::Instance().GetRenderer().SetVertexUniform(0, &vertexUniform, sizeof(vertexUniform));
         Engine::Instance().GetRenderer().SetVertexUniform(1, &lightUniform, sizeof(lightUniform));
         Engine::Instance().GetRenderer().SetVertexUniform(2, &materialUniform, sizeof(materialUniform));
-        Engine::Instance().GetRenderer().SetFragmentUniform(0, &tint, sizeof(tint));
+
+        Engine::Instance().GetRenderer().SetFragmentUniform(0, &materialUniform, sizeof(materialUniform));
         Engine::Instance().GetRenderer().SetFragmentTexture(0, *texture);
 
         model->Draw(Engine::Instance().GetRenderer());

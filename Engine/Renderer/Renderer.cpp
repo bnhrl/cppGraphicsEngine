@@ -41,6 +41,7 @@ namespace nu
         std::cout << "GPU Device: " << SDL_GetGPUDeviceDriver(m_gpuDevice) << std::endl;
 
         SDL_SetRenderVSync(m_renderer, 1);
+        CreateDepthBuffer();
 
         return true;
     }
@@ -107,8 +108,7 @@ namespace nu
 			depth_target_info.stencil_load_op = SDL_GPU_LOADOP_CLEAR;
 			depth_target_info.stencil_store_op = SDL_GPU_STOREOP_STORE; 
 
-            m_renderPass = SDL_BeginGPURenderPass(m_commandBuffer, &color_target_info, 1, nullptr);
-            //m_renderPass = SDL_BeginGPURenderPass(m_commandBuffer, &color_target_info, 1, &depth_target_info);
+            m_renderPass = SDL_BeginGPURenderPass(m_commandBuffer, &color_target_info, 1, &depth_target_info);
             //SDL_EndGPURenderPass(m_renderPass);
         }
 
