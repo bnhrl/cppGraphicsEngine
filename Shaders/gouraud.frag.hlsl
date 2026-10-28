@@ -12,6 +12,7 @@ struct Input
 {
     float2 texcoord : TEXTCOORD0;
     float3 diffuse : TEXCOORD1;
+    float3 specular : TEXCOORD2;
 };
 
 struct Output
@@ -24,7 +25,7 @@ Output main(Input input)
     Output output;
     
     float4 albedo = u_texture.Sample(u_sampler, input.texcoord) * material.color;
-    output.color = float4(albedo.rgb * input.diffuse.rgb, albedo.a);
+    output.color = float4(albedo.rgb * input.diffuse.rgb + input.specular, albedo.a);
     
     return output;
 }
