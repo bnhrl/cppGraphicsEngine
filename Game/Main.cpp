@@ -63,7 +63,7 @@ int main()
     //auto vshader = Resources().Get<nu::Shader>("shaders/position.vert", Engine::Instance().GetRenderer(), 1);
     //auto fshader = Resources().Get<nu::Shader>("shaders/color.frag", Engine::Instance().GetRenderer(), 1);
 
-    glm::vec3 cameraPosition{ 0, 0, 5 };
+    glm::vec3 cameraPosition{ 0, 0, 1.0f };
 
     auto model = Resources().Get<Model>("models/spot.obj", Engine::Instance().GetRenderer());
     auto texture = Resources().Get<Texture>("textures/spot_diffuse.png", Engine::Instance().GetRenderer());
@@ -147,7 +147,7 @@ int main()
         .color{1.f, 1.f, 1.f, 1.f},
         .tiling{ 1.f},
         .offset{ 0.f, 0.f },
-        .shininess{ 480.0f }
+        .shininess{ 640.0f }
     };
 
     Transform transform;
@@ -195,7 +195,7 @@ int main()
         lightUniform.outerCutoff = sin(time) + 1.333f + lightUniform.innerCutoff;
 
         // TRANSFORM
-        //transform.rotation.z = time;
+        transform.rotation.x = 3.14159f * 0.5f;
 
         // VIEW MATRIX
         auto view = glm::lookAtRH(cameraPosition, glm::vec3{0}, glm::vec3{0, 1, 0});
