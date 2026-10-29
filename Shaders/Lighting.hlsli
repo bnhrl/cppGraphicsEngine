@@ -5,6 +5,8 @@
 #define LIGHT_POINT         1
 #define LIGHT_SPOT          2
 
+static const uint MAX_LIGHTS = 8;
+
 struct Material
 {
     float4 color;
@@ -22,10 +24,9 @@ struct Light
     float range;
     float3 color;
     float intensity;
-    float3 ambient;
     float innerCutoff;
     float outerCutoff;
-    float3 padding1;
+    float2 padding1;
 };
 
 float calculateAttentuation(float distance, float range)
@@ -57,7 +58,7 @@ float3 getLightVector(Light light, float3 position, out float attentuation)
             float distance = length(toLight);
             l = toLight / distance;
             attentuation = calculateAttentuation(distance, light.range);
-            attentuation *= smoothstep(light.outerCutoff, light.innerCutoff, dot(-l, light.direction));
+            attentuation *= smoothstep(light.innerCutoff, light.outerCutoff, dot(-l, light.direction));
         }
             break;
     }
@@ -94,6 +95,6 @@ void calculateLighting(Light light, Material material, float3 position, float3 n
     // light arriving at the surface
     float3 radiance = light.color * light.intensity * attenuation;
 
-    diffuse = light.ambient + calculateDiffuse(radiance, n, l);
-    specular = calculateSpecular(radiance, n, l, v, material);
+    diffuse += calculateDiffuse(radiance, n, l);
+    specular += calculateSpecular(radiance, n, l, v, material);
 }

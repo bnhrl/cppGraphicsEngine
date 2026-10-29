@@ -16,6 +16,7 @@
 #include <glm/gtx/transform.hpp>
 
 #define CHECK_UNIFORM_BOUNDARY(T) static_assert((sizeof(T) % 16) == 0);
+#define MAX_LIGHTS 8
 
 using namespace nu;
 
@@ -63,10 +64,10 @@ int main()
     //auto vshader = Resources().Get<nu::Shader>("shaders/position.vert", Engine::Instance().GetRenderer(), 1);
     //auto fshader = Resources().Get<nu::Shader>("shaders/color.frag", Engine::Instance().GetRenderer(), 1);
 
-    glm::vec3 cameraPosition{ 0, 0, 1.0f };
+    glm::vec3 cameraPosition{ 0, 2.0f, 5.0f };
 
-    auto model = Resources().Get<Model>("models/spot.obj", Engine::Instance().GetRenderer());
-    auto texture = Resources().Get<Texture>("textures/spot_diffuse.png", Engine::Instance().GetRenderer());
+    auto model = Resources().Get<Model>("models/plane.obj", Engine::Instance().GetRenderer());
+    auto texture = Resources().Get<Texture>("textures/brick_diffuse.png", Engine::Instance().GetRenderer());
 
     auto vshader = Resources().Get<nu::Shader>("shaders/phong.vert", Engine::Instance().GetRenderer(), 3);
     auto fshader = Resources().Get<nu::Shader>("shaders/phong.frag", Engine::Instance().GetRenderer(), 3, 1);
@@ -98,7 +99,8 @@ int main()
 
     CHECK_UNIFORM_BOUNDARY(VertexUniform);
     
-    struct LightUniform 
+
+    struct Light 
     {
         glm::vec3 position;
         LightType type;
@@ -106,12 +108,19 @@ int main()
         float range = 10.f;
         glm::vec3 color;
         float intensity;
-        glm::vec3 ambient;
         float innerCutoff{ 0.3f };
         float outerCutoff{ 1.5f };
-        glm::vec3 padding1;
+        glm::vec2 padding1;
     };
 
+    struct LightUniform 
+    {
+        Light lights[MAX_LIGHTS];
+        uint32_t numLights = MAX_LIGHTS;
+        glm::vec3 ambient;
+    };
+
+    CHECK_UNIFORM_BOUNDARY(Light);
     CHECK_UNIFORM_BOUNDARY(LightUniform);
 
     struct MaterialUniform
@@ -129,28 +138,45 @@ int main()
 
     VertexUniform vertexUniform;
 
-    LightUniform lightUniform
+    Light light0
     {
-        .position{0, 5, 0},
+        .position{0, 5, 2},
         .type{LightType::Spot},
-        .direction{0, -1, 0},
+        .direction{0, -1, -0.5f},
         .range{15},
         .color{1.f, 1.f, 1.f},
         .intensity{1.0f},
-        .ambient{0.25f},
-        .innerCutoff{0.3f},
-        .outerCutoff{0.6f}
+        .innerCutoff{0.6f},
+        .outerCutoff{0.7f}
+    };
+
+    Light light1
+    {
+        .position{0, 7.5f, -5},
+        .type{LightType::Point},
+        .direction{0, -1, 0.5f},
+        .range{15},
+        .color{.2f, 0.f, 1.f},
+        .intensity{1.0f},
+    };
+
+    LightUniform lightUniform
+    {
+        .lights{light0, light1},
+        .numLights = 2,
+        .ambient{0.01f}
     };
 
     MaterialUniform materialUniform
     {
         .color{1.f, 1.f, 1.f, 1.f},
-        .tiling{ 1.f},
+        .tiling{ 32.f},
         .offset{ 0.f, 0.f },
         .shininess{ 640.0f }
     };
 
     Transform transform;
+    transform.scale = {100,100,100};
 
     glm::vec4 tint{ 1,1,1,1 };
 
@@ -185,17 +211,19 @@ int main()
         if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_S)) direction.z = -1;
         if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
 
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_I)) lightUniform.position.y += dt * 50.f;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_J)) lightUniform.position.y -= dt * 50.f;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_1)) lightUniform.type = LightType::Directional;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_2)) lightUniform.type = LightType::Point;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_3)) lightUniform.type = LightType::Spot;
+        // Light testing currently doesn't work because of struct stuff (light0 -> lightUniform.lights[0])
+        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_I)) light0.position.y += dt * 50.f;
+        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_J)) light0.position.y -= dt * 50.f;
+        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_1)) light0.type = LightType::Directional;
+        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_2)) light0.type = LightType::Point;
+        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_3)) light0.type = LightType::Spot;
+        //lightUniform.lights[0].position = glm::eulerAngleY(time*10.f) * glm::vec4(0,0,10,1);
 
         cameraPosition += direction * 4.0f * dt;
-        lightUniform.outerCutoff = sin(time) + 1.333f + lightUniform.innerCutoff;
+        //lightUniform.outerCutoff = sin(time) + 1.333f + lightUniform.innerCutoff;
 
         // TRANSFORM
-        transform.rotation.x = 3.14159f * 0.5f;
+        //transform.rotation.z += dt;
 
         // VIEW MATRIX
         auto view = glm::lookAtRH(cameraPosition, glm::vec3{0}, glm::vec3{0, 1, 0});
@@ -203,7 +231,7 @@ int main()
 
         // PROJECTION MATRIX
         float aspect = Engine::Instance().GetRenderer().GetWidth() / (float)Engine::Instance().GetRenderer().GetHeight();
-        auto projection = glm::perspectiveRH(glm::radians(90.0f), aspect, 0.01f, 20.0f);
+        auto projection = glm::perspectiveRH(glm::radians(90.0f), aspect, 0.001f, 100.0f);
 
         // MVP
         vertexUniform.model = transform.GetMatrix();
