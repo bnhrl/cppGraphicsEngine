@@ -183,6 +183,9 @@
       <Project>{0841fa30-dae5-4e10-88ab-0707ab14df03}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Build\Assets\scenes\scene.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

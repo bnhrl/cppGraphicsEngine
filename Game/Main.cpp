@@ -8,6 +8,7 @@
 #include "Renderer/Texture.h"
 #include "Resources/ResourceManager.h"
 #include "Math/Transform.h"
+#include "Framework/Scene.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -53,6 +54,9 @@ int main()
 
     // INITIALIZATION
     Engine::Instance().Initialize();
+
+    Scene scene;
+    scene.Load("scenes/scene.json");
 
     auto vb = std::make_shared<VertexBuffer>();
     vb->Create<Vertex>(vertices, Engine::Instance().GetRenderer());
@@ -226,6 +230,7 @@ int main()
         //transform.rotation.z += dt;
 
         // VIEW MATRIX
+        //auto view = glm::lookAtRH(cameraPosition, cameraPosition + glm::vec3(0, -1, 0), glm::vec3{ 0, 1, 0 });
         auto view = glm::lookAtRH(cameraPosition, glm::vec3{0}, glm::vec3{0, 1, 0});
 
 
