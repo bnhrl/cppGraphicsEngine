@@ -15,6 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/transform.hpp>
+#include <Components/CameraComponent.h>
 
 #define CHECK_UNIFORM_BOUNDARY(T) static_assert((sizeof(T) % 16) == 0);
 #define MAX_LIGHTS 8
@@ -67,8 +68,6 @@ int main()
 
     //auto vshader = Resources().Get<nu::Shader>("shaders/position.vert", Engine::Instance().GetRenderer(), 1);
     //auto fshader = Resources().Get<nu::Shader>("shaders/color.frag", Engine::Instance().GetRenderer(), 1);
-
-    glm::vec3 cameraPosition{ 0, 2.0f, 5.0f };
 
     auto model = Resources().Get<Model>("models/plane.obj", Engine::Instance().GetRenderer());
     auto texture = Resources().Get<Texture>("textures/brick_diffuse.png", Engine::Instance().GetRenderer());
@@ -157,7 +156,7 @@ int main()
     Light light1
     {
         .position{0, 7.5f, -5},
-        .type{LightType::Point},
+        .type{LightType::Directional},
         .direction{0, -1, 0.5f},
         .range{15},
         .color{.2f, 0.f, 1.f},
@@ -209,11 +208,11 @@ int main()
         float dt = Engine::Instance().GetTime().GetDeltaTime();
         float time = Engine::Instance().GetTime().GetTime();
 
-        glm::vec3 direction{ 0 };
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_W)) direction.z = 1;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_A)) direction.x = -1;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_S)) direction.z = -1;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
+        // SCENE
+        scene.Update(dt);
+
+        auto camera = scene.GetActorByName("Camera");
+        auto cameraComponent = camera->GetComponent<CameraComponent>();
 
         // Light testing currently doesn't work because of struct stuff (light0 -> lightUniform.lights[0])
         if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_I)) light0.position.y += dt * 50.f;
@@ -223,25 +222,13 @@ int main()
         if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_3)) light0.type = LightType::Spot;
         //lightUniform.lights[0].position = glm::eulerAngleY(time*10.f) * glm::vec4(0,0,10,1);
 
-        cameraPosition += direction * 4.0f * dt;
-        //lightUniform.outerCutoff = sin(time) + 1.333f + lightUniform.innerCutoff;
 
-        // TRANSFORM
-        //transform.rotation.z += dt;
-
-        // VIEW MATRIX
-        //auto view = glm::lookAtRH(cameraPosition, cameraPosition + glm::vec3(0, -1, 0), glm::vec3{ 0, 1, 0 });
-        auto view = glm::lookAtRH(cameraPosition, glm::vec3{0}, glm::vec3{0, 1, 0});
-
-
-        // PROJECTION MATRIX
-        float aspect = Engine::Instance().GetRenderer().GetWidth() / (float)Engine::Instance().GetRenderer().GetHeight();
-        auto projection = glm::perspectiveRH(glm::radians(90.0f), aspect, 0.001f, 100.0f);
+        
 
         // MVP
         vertexUniform.model = transform.GetMatrix();
-        vertexUniform.mvp = projection * view * vertexUniform.model;
-        vertexUniform.cameraPosition = cameraPosition;
+        vertexUniform.mvp = cameraComponent->GetProjection() * cameraComponent->GetView() * vertexUniform.model;
+        vertexUniform.cameraPosition = camera->GetTransform().position;
 
         // RENDER
         Engine::Instance().GetRenderer().BeginFrame();

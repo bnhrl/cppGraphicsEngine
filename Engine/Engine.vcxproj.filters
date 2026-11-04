@@ -146,6 +146,9 @@
     <ClInclude Include="Components\LightComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="Components\CameraControllerComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\PhysicsComponent.cpp">
@@ -214,6 +217,9 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="Components\LightComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\CameraControllerComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>

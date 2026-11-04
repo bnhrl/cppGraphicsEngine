@@ -16,6 +16,10 @@
           "fov": 70,
           "near_plane": 0.001,
           "far_plane": 200
+        },
+        {
+          "type": "CameraControllerComponent",
+          "speed": 5
         }
       ]
     }
