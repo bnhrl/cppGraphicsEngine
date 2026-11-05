@@ -3,6 +3,7 @@
 #include "Math/Vector2.h"
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include "Uniforms.h"
 
 namespace nu
 {
@@ -39,13 +40,14 @@ namespace nu
 		SDL_Window* GetWindow() const { return m_window; }
 
 		void SetPipeline(const class Pipeline& pipeline);
-		void SetVertexBuffer(const class VertexBuffer& vertexBuffer);
-		void SetIndexBuffer(const class IndexBuffer& indexBuffer);
+		void SetVertexBuffer(const class VertexBuffer& vertexBuffer) const;
+		void SetIndexBuffer(const class IndexBuffer& indexBuffer) const;
 		void Draw(uint32_t vertexCount);
 		void DrawIndex(const class IndexBuffer& indexBuffer);
 
-		void SetVertexUniform(uint32_t slot, const void* data, uint32_t size);
-		void SetFragmentUniform(uint32_t slot, const void* data, uint32_t size);
+		void SetVertexUniform(UniformSlot slot, const void* data, uint32_t size) const;
+		void SetFragmentUniform(UniformSlot slot, const void* data, uint32_t size) const;
+
 		void SetFragmentTexture(uint32_t slot, const class Texture& texture);
 
 		void CreateDepthBuffer();

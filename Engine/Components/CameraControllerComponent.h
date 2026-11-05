@@ -18,6 +18,6 @@ namespace nu
 		float m_speed = 4.f;
 		float m_yaw;
 		float m_pitch;
-		float m_sensitivity;
+		float m_sensitivity{ 1.f };
 	};
 }

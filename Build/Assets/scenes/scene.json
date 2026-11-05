@@ -19,7 +19,8 @@
         },
         {
           "type": "CameraControllerComponent",
-          "speed": 5
+          "speed": 5,
+          "sensitivity": 0.2
         }
       ]
     }

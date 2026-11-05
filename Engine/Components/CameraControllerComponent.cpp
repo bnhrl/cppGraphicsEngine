@@ -29,10 +29,8 @@ namespace nu
 			m_pitch = glm::clamp(m_pitch, -89.0f, 89.0f);
 		}
 
-		//m_owner->transform.SetRotation(glm::vec3(pitch, yaw, 0.0f));
+		m_owner->SetRotation(glm::vec3(m_pitch, m_yaw, 0.0f));
 
-		glm::quat q = glm::quat_cast(glm::eulerAngleYXZ(glm::radians(m_yaw), glm::radians(m_pitch), 0.0f));
-		//m_owner->transform.SetRotationQuat(q);
 
 		glm::vec3 direction{ 0 };
 		if (m_input.GetKeyDown(SDL_SCANCODE_A)) direction -= m_owner->GetTransform().Right();
@@ -45,7 +43,7 @@ namespace nu
 		if (glm::length2(direction) > 0.0f) {
 			direction = glm::normalize(direction);
 		}
-		m_owner->SetPosition(m_owner->GetTransform().position + direction * (m_speed * dt));
+		m_owner->SetPosition(m_owner->GetTransform().position + direction * m_speed * dt);
 
 	}
 	void CameraControllerComponent::Read(const json::value_t& value)
@@ -53,5 +51,6 @@ namespace nu
 		Component::Read(value);
 
 		JSON_READ_NAME(value, "speed", m_speed);
+		JSON_READ_NAME(value, "sensitivity", m_sensitivity);
 	}
 }
