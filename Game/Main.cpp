@@ -19,7 +19,6 @@
 #include <Components/CameraComponent.h>
 
 #define CHECK_UNIFORM_BOUNDARY(T) static_assert((sizeof(T) % 16) == 0);
-#define MAX_LIGHTS 8
 
 using namespace nu;
 
@@ -62,11 +61,7 @@ int main()
     ib->Create(indices, Engine::Instance().GetRenderer());
 
 
-    //auto vshader = Resources().Get<nu::Shader>("shaders/position.vert", Engine::Instance().GetRenderer(), 1);
-    //auto fshader = Resources().Get<nu::Shader>("shaders/color.frag", Engine::Instance().GetRenderer(), 1);
-
-    auto model = Resources().Get<Model>("models/plane.obj", Engine::Instance().GetRenderer());
-    auto texture = Resources().Get<Texture>("textures/brick_diffuse.png", Engine::Instance().GetRenderer());
+    auto texture = Resources().Get<Texture>("textures/ogre_diffuse.bmp", Engine::Instance().GetRenderer());
 
     auto vshader = Resources().Get<nu::Shader>("shaders/phong.vert", Engine::Instance().GetRenderer(), 3);
     auto fshader = Resources().Get<nu::Shader>("shaders/phong.frag", Engine::Instance().GetRenderer(), 3, 1);
@@ -87,99 +82,9 @@ int main()
 
 
 
-    // UNIFORMS
-    struct VertexUniform
-    {
-        glm::mat4 mvp;
-        glm::mat4 model;
-        glm::vec3 cameraPosition;
-        float padding1;
-    };
-
-    CHECK_UNIFORM_BOUNDARY(VertexUniform);
-    
-
-    struct Light 
-    {
-        glm::vec3 position;
-        LightType type;
-        glm::vec3 direction;
-        float range = 10.f;
-        glm::vec3 color;
-        float intensity;
-        float innerCutoff{ 0.3f };
-        float outerCutoff{ 1.5f };
-        glm::vec2 padding1;
-    };
-
-    struct LightUniform 
-    {
-        Light lights[MAX_LIGHTS];
-        uint32_t numLights = MAX_LIGHTS;
-        glm::vec3 ambient;
-    };
-
-    CHECK_UNIFORM_BOUNDARY(Light);
-    CHECK_UNIFORM_BOUNDARY(LightUniform);
-
-    struct MaterialUniform
-    {
-        glm::vec4 color{ 1.f, 1.f, 1.f, 1.f };
-        glm::vec2 tiling{ 1.f };
-        glm::vec2 offset{ 0.f };
-        float shininess{ 1.0f };
-        glm::vec3 padding1;
-    };
-
-    CHECK_UNIFORM_BOUNDARY(MaterialUniform);
-
-
-    ObjectUniform objectUniform;
-    VertexUniform vertexUniform;
-
-    Light light0
-    {
-        .position{0, 5, 2},
-        .type{LightType::Spot},
-        .direction{0, -1, -0.5f},
-        .range{15},
-        .color{1.f, 1.f, 1.f},
-        .intensity{1.0f},
-        .innerCutoff{0.6f},
-        .outerCutoff{0.7f}
-    };
-
-    Light light1
-    {
-        .position{0, 7.5f, -5},
-        .type{LightType::Directional},
-        .direction{0, -1, 0.5f},
-        .range{15},
-        .color{.2f, 0.f, 1.f},
-        .intensity{1.0f},
-    };
-
-    LightUniform lightUniform
-    {
-        .lights{light0, light1},
-        .numLights = 2,
-        .ambient{0.01f}
-    };
-
-    MaterialUniform materialUniform
-    {
-        .color{1.f, 1.f, 1.f, 1.f},
-        .tiling{ 32.f},
-        .offset{ 0.f, 0.f },
-        .shininess{ 640.0f }
-    };
-
-    Transform transform;
-    transform.scale = {100,100,100};
-
-    glm::vec4 tint{ 1,1,1,1 };
-
-
+    // ENGINE PARTS
+    auto& engineTime = Engine::Instance().GetTime();
+    auto& renderer = Engine::Instance().GetRenderer();
 
     // MAIN LOOP
     bool quit = false;
@@ -197,51 +102,21 @@ int main()
 
         // ENGINE
         Engine::Instance().Update();
-        float dt = Engine::Instance().GetTime().GetDeltaTime();
-        float time = Engine::Instance().GetTime().GetTime();
+        float dt = engineTime.GetDeltaTime();
+        float time = engineTime.GetTime();
 
         // SCENE
         scene.Update(dt);
 
-        auto camera = scene.GetActorByName("Camera");
-        auto cameraComponent = camera->GetComponent<CameraComponent>();
-
-        // Light testing currently doesn't work because of struct stuff (light0 -> lightUniform.lights[0])
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_I)) light0.position.y += dt * 50.f;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_J)) light0.position.y -= dt * 50.f;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_1)) light0.type = LightType::Directional;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_2)) light0.type = LightType::Point;
-        if (Engine::Instance().GetInput().GetKeyDown(SDL_SCANCODE_3)) light0.type = LightType::Spot;
-        //lightUniform.lights[0].position = glm::eulerAngleY(time*10.f) * glm::vec4(0,0,10,1);
-
-
-        
-
-        // MVP
-        objectUniform.model = transform.GetMatrix();
-
-        vertexUniform.model = transform.GetMatrix();
-        vertexUniform.mvp = cameraComponent->GetProjection() * cameraComponent->GetView() * vertexUniform.model;
-        vertexUniform.cameraPosition = camera->GetTransform().position;
-
         // RENDER
-        Engine::Instance().GetRenderer().BeginFrame();
+        renderer.BeginFrame();
 
-        Engine::Instance().GetRenderer().SetPipeline(*pipeline);
+        renderer.SetPipeline(*pipeline);
+        renderer.SetFragmentTexture(0, *texture);
 
-        Engine::Instance().GetRenderer().SetVertexUniform(UniformSlot::Object, &vertexUniform, sizeof(vertexUniform));
-        Engine::Instance().GetRenderer().SetVertexUniform(UniformSlot::Light, &lightUniform, sizeof(lightUniform));
-        Engine::Instance().GetRenderer().SetVertexUniform(UniformSlot::Material, &materialUniform, sizeof(materialUniform));
+        scene.Draw(renderer);
 
-        Engine::Instance().GetRenderer().SetFragmentUniform(UniformSlot::Object, &vertexUniform, sizeof(vertexUniform));
-        Engine::Instance().GetRenderer().SetFragmentUniform(UniformSlot::Light, &lightUniform, sizeof(lightUniform));
-        Engine::Instance().GetRenderer().SetFragmentUniform(UniformSlot::Material, &materialUniform, sizeof(materialUniform));
-
-        Engine::Instance().GetRenderer().SetFragmentTexture(0, *texture);
-
-        model->Draw(Engine::Instance().GetRenderer());
-
-        Engine::Instance().GetRenderer().EndFrame();
+        renderer.EndFrame();
     }
 
     // SHUTDOWN

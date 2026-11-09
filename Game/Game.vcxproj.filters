@@ -8,6 +8,9 @@
     <Filter Include="Assets\Scenes">
       <UniqueIdentifier>{c0a8c170-d381-4a59-bdbf-e75877b0ffcf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\Materials">
+      <UniqueIdentifier>{6ca7eba8-d18d-4489-91a1-c9a59717e9cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -15,6 +18,12 @@
   <ItemGroup>
     <None Include="..\Build\Assets\scenes\scene.json">
       <Filter>Assets\Scenes</Filter>
+    </None>
+    <None Include="..\Build\Assets\materials\ogre.instance.json">
+      <Filter>Assets\Materials</Filter>
+    </None>
+    <None Include="..\Build\Assets\materials\phong.material.json">
+      <Filter>Assets\Materials</Filter>
     </None>
   </ItemGroup>
 </Project>

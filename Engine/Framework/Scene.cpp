@@ -33,7 +33,7 @@ namespace nu
 		m_pendingActors.clear();
 	}
 
-	void Scene::Draw(const class Renderer& renderer)
+	void Scene::Draw(const Renderer& renderer)
 	{
 		FrameUniform frameUniform{};
 
@@ -54,6 +54,7 @@ namespace nu
 		}
 
 		LightUniform lightUniform{};
+		lightUniform.ambient = glm::vec3{ 0.2f };
 
 		auto lights = GetActorsByTag("Light");
 		for (auto light : lights)

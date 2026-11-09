@@ -261,7 +261,7 @@ namespace nu
             0, 
             0);
     }
-    void Renderer::DrawIndex(const IndexBuffer& indexBuffer)
+    void Renderer::DrawIndex(const IndexBuffer& indexBuffer) const
     {
         SDL_DrawGPUIndexedPrimitives(
             m_renderPass,
@@ -284,8 +284,8 @@ namespace nu
     {
         SDL_GPUTextureSamplerBinding binding
         {
-            .texture = texture.m_gpuTexture,
-            .sampler = texture.m_gpuSampler
+            .texture = texture.GetGPUTexture(),
+            .sampler = texture.GetGPUSampler()
         };
 
         SDL_BindGPUFragmentSamplers(m_renderPass, slot, &binding, 1);

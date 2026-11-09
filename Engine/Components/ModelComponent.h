@@ -1,5 +1,6 @@
 #pragma once
 #include "RendererComponent.h"
+#include "Renderer/Model.h"
 
 namespace nu
 {
@@ -8,8 +9,10 @@ namespace nu
 	public:
 		CLASS_PROTOTYPE(ModelComponent)
 
-		void Draw(const Renderer& renderer) override;
+		virtual void Draw(const Renderer& renderer) override;
+		virtual void Read(const json::value_t& value) override;
 
 	private:
+		res_t<Model> m_model;
 	};
 }
