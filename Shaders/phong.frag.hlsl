@@ -50,7 +50,8 @@ Output main(Input input)
         calculateLighting(lights.lights[i], material, input.worldPosition, normalize(input.normal), v, diffuse, specular);
     }
     
-    output.color = float4(albedo.rgb * diffuse.rgb + specular.rgb, albedo.a);
+    //output.color = float4(albedo.rgb * diffuse.rgb + specular.rgb, albedo.a);
+    output.color = float4(1, 1, 1, 1);
     
     return output;
 }

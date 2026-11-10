@@ -45,6 +45,9 @@ namespace nu
 		}
 		m_owner->SetPosition(m_owner->GetTransform().position + direction * m_speed * dt);
 
+		// These both spam print "0 0 5"??? Why??
+		//std::cout << direction.x << " " << direction.y << " " << direction.z << std::endl;
+		//std::cout << m_owner->GetTransform().position.x << " " << m_owner->GetTransform().position.y << " " << m_owner->GetTransform().position.z << std::endl;
 	}
 	void CameraControllerComponent::Read(const json::value_t& value)
 	{

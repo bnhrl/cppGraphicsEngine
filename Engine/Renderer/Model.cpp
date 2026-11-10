@@ -2,6 +2,7 @@
 #include "Model.h"
 #include "Renderer.h"
 #include "Resources/ResourceManager.h"
+#include "Renderer/Texture.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -16,8 +17,11 @@ namespace nu
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(filename,
 			aiProcess_Triangulate |
+			aiProcess_JoinIdenticalVertices |
 			aiProcess_GenSmoothNormals |
 			aiProcess_FlipUVs |
+			aiProcess_RemoveRedundantMaterials |
+			aiProcess_OptimizeMeshes |
 			aiProcess_CalcTangentSpace);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -27,6 +31,9 @@ namespace nu
 			return false;
 		}
 
+		std::string directory = "";//GetParentDirectory(filename) + "/";
+		LoadMaterials(scene, directory, renderer);
+
 		// start processing the scene from the root node with ProcessNode(node, scene, renderer)
 		// the root node is scene->mRootNode
 		ProcessNode(scene->mRootNode, scene, renderer);
@@ -34,18 +41,19 @@ namespace nu
 		return true;
 	}
 
-	void Model::Draw(const Renderer& renderer) const
+	void Model::Draw(const Renderer& renderer, const std::vector<res_t<MaterialInstance>>& overrides) const
 	{
 		for (const auto& mesh : m_meshes)
 		{
-			// set the mesh vertex buffer on the renderer with renderer.SetVertexBuffer(vertexBuffer)
-			// the buffers are stored as unique_ptr, so dereference them with *
+			uint32_t slot = mesh.materialIndex;
+			const MaterialInstance& material = (slot < overrides.size() && overrides[slot]) ?
+				*overrides[slot] :
+				m_materials[slot];
+
+			renderer.SetMaterial(material);
+
 			renderer.SetVertexBuffer(*mesh.vertexBuffer);
-
-			// set the mesh index buffer on the renderer with renderer.SetIndexBuffer(indexBuffer)
 			renderer.SetIndexBuffer(*mesh.indexBuffer);
-
-			// draw the mesh with renderer.DrawIndex(indexBuffer)
 			renderer.DrawIndex(*mesh.indexBuffer);
 		}
 	}
@@ -155,10 +163,10 @@ namespace nu
 			return;
 		}
 
-		// add newMesh to m_meshes
-		// Mesh holds unique_ptrs so it can't be copied, use std::move(newMesh)
 		newMesh.materialIndex = mesh->mMaterialIndex;
 
+		// add newMesh to m_meshes
+		// Mesh holds unique_ptrs so it can't be copied, use std::move(newMesh)
 		m_meshes.push_back(std::move(newMesh));
 	}
 
@@ -202,7 +210,7 @@ namespace nu
 				}
 				else
 				{
-					auto texture = Resources().Get<Texture>(directory + path.C_Str(), renderer);
+					auto texture = Resources().Get<Texture>(std::string(directory + path.C_Str()), renderer);
 					if (!instance.SetTexture("base_map", texture))
 					{
 						std::cerr << "Material has no base_map slot for texture: " << path.C_Str() << std::endl;

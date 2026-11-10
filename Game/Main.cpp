@@ -54,34 +54,6 @@ int main()
     Scene scene;
     scene.Load("scenes/scene.json");
 
-    auto vb = std::make_shared<VertexBuffer>();
-    vb->Create<Vertex>(vertices, Engine::Instance().GetRenderer());
-
-    auto ib = std::make_shared<IndexBuffer>();
-    ib->Create(indices, Engine::Instance().GetRenderer());
-
-
-    auto texture = Resources().Get<Texture>("textures/ogre_diffuse.bmp", Engine::Instance().GetRenderer());
-
-    auto vshader = Resources().Get<nu::Shader>("shaders/phong.vert", Engine::Instance().GetRenderer(), 3);
-    auto fshader = Resources().Get<nu::Shader>("shaders/phong.frag", Engine::Instance().GetRenderer(), 3, 1);
-    //auto vshader = Resources().Get<nu::Shader>("shaders/gouraud.vert", Engine::Instance().GetRenderer(), 3);
-    //auto fshader = Resources().Get<nu::Shader>("shaders/gouraud.frag", Engine::Instance().GetRenderer(), 1, 1);
-
-    auto pipeline = std::make_shared<Pipeline>();
-
-    pipeline->AddVertexBuffer(sizeof(Model::Vertex));
-    pipeline->AddVertexAttribute(0, SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, offsetof(Model::Vertex, position));
-    pipeline->AddVertexAttribute(1, SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2, offsetof(Model::Vertex, texcoord));
-    pipeline->AddVertexAttribute(2, SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, offsetof(Model::Vertex, normal));
-    pipeline->AddVertexAttribute(3, SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3, offsetof(Model::Vertex, tangent));
-
-    pipeline->Create(*vshader.get(), *fshader.get(),
-        Engine::Instance().GetRenderer().GetGPUDevice(),
-        Engine::Instance().GetRenderer().GetWindow());
-
-
-
     // ENGINE PARTS
     auto& engineTime = Engine::Instance().GetTime();
     auto& renderer = Engine::Instance().GetRenderer();
@@ -110,9 +82,6 @@ int main()
 
         // RENDER
         renderer.BeginFrame();
-
-        renderer.SetPipeline(*pipeline);
-        renderer.SetFragmentTexture(0, *texture);
 
         scene.Draw(renderer);
 

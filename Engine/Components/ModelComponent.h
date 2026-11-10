@@ -14,5 +14,6 @@ namespace nu
 
 	private:
 		res_t<Model> m_model;
+		std::vector<res_t<class MaterialInstance>> m_materials;
 	};
 }
