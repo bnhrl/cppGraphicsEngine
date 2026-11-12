@@ -43,10 +43,10 @@ namespace nu
 			auto cameraComponent = camera->GetComponent<CameraComponent>();
 			if (cameraComponent)
 			{
-				frameUniform.cameraPosition = camera->GetTransform().position;
 				frameUniform.view = cameraComponent->GetView();
 				frameUniform.projection = cameraComponent->GetProjection();
 				frameUniform.viewProjection = frameUniform.projection * frameUniform.view;
+				frameUniform.cameraPosition = camera->GetTransform().position;
 
 				renderer.SetVertexUniform(UniformSlot::Frame, &frameUniform, sizeof(frameUniform));
 				renderer.SetFragmentUniform(UniformSlot::Frame, &frameUniform, sizeof(frameUniform));
@@ -54,7 +54,7 @@ namespace nu
 		}
 
 		LightUniform lightUniform{};
-		lightUniform.ambient = glm::vec3{ 0.2f };
+		lightUniform.ambient = glm::vec3{ 0.2f }; //ALL AMBIENT LIGHTS
 
 		auto lights = GetActorsByTag("Light");
 		for (auto light : lights)
@@ -62,13 +62,17 @@ namespace nu
 			auto lightComponent = light->GetComponent<LightComponent>();
 			if (lightComponent)
 			{
-
+				lightUniform.lights[lightUniform.numLights++] = lightComponent->GetLightData();
 			}
 		}
 
+		renderer.SetVertexUniform(UniformSlot::Light, &lightUniform, sizeof(lightUniform));
+		renderer.SetFragmentUniform(UniformSlot::Light, &lightUniform, sizeof(lightUniform));
+
+
 		for (const auto& actor : m_actors)
 		{
-			if (actor)
+			if (actor && actor->IsActive())
 				actor->Draw(renderer);
 		}
 	}

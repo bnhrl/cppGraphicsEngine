@@ -23,8 +23,8 @@ namespace nu
 
 
 	private:
-		glm::mat4x4 m_view;
-		glm::mat4x4 m_projection;
+		glm::mat4x4 m_view{1.0f};
+		glm::mat4x4 m_projection{1.0f};
 		float m_aspectRatio{ 16.f / 9.f };
 	};
 }

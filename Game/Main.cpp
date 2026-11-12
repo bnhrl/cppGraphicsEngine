@@ -18,8 +18,6 @@
 #include <glm/gtx/transform.hpp>
 #include <Components/CameraComponent.h>
 
-#define CHECK_UNIFORM_BOUNDARY(T) static_assert((sizeof(T) % 16) == 0);
-
 using namespace nu;
 
 

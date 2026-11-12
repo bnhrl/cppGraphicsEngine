@@ -182,6 +182,9 @@
     <ProjectReference Include="..\Engine\Engine.vcxproj">
       <Project>{0841fa30-dae5-4e10-88ab-0707ab14df03}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Shaders\Shaders.vcxproj">
+      <Project>{1dc1933f-925a-3eb9-ac2e-61b6862b1f0c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Build\Assets\materials\ogre.instance.json" />

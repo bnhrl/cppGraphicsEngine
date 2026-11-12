@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Resources/ResourceManager.h"
 #include "Renderer/Texture.h"
+#include "Core/File.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -31,7 +32,8 @@ namespace nu
 			return false;
 		}
 
-		std::string directory = "";//GetParentDirectory(filename) + "/";
+		// texture paths in the model are relative to the model file
+		std::string directory = GetParentDirectory(filename) + "/";
 		LoadMaterials(scene, directory, renderer);
 
 		// start processing the scene from the root node with ProcessNode(node, scene, renderer)
