@@ -55,6 +55,7 @@ int main()
     // ENGINE PARTS
     auto& engineTime = Engine::Instance().GetTime();
     auto& renderer = Engine::Instance().GetRenderer();
+    auto& editor = Engine::Instance().GetEditor();
 
     // MAIN LOOP
     bool quit = false;
@@ -78,11 +79,17 @@ int main()
         // SCENE
         scene.Update(dt);
 
+        // EDITOR
+        editor.BeginFrame();
+        editor.Update();
+
         // RENDER
         renderer.BeginFrame();
 
         scene.Draw(renderer);
 
+        renderer.EndRenderPass();
+        editor.Draw(renderer);
         renderer.EndFrame();
     }
 
