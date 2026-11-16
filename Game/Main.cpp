@@ -65,6 +65,8 @@ int main()
         SDL_Event event;
         while (SDL_PollEvent(&event)) 
         {
+            editor.ProcessEvent(event);
+
             if (event.type == SDL_EVENT_QUIT) 
                 quit = true;
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_ESCAPE)
@@ -81,7 +83,7 @@ int main()
 
         // EDITOR
         editor.BeginFrame();
-        editor.Update();
+        editor.Update(scene);
 
         // RENDER
         renderer.BeginFrame();

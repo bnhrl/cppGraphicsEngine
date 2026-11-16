@@ -76,6 +76,8 @@ namespace nu
         template<std::derived_from<Component> T>
         T* GetComponent();
 
+        void UpdateGui() override;
+
 
         friend Scene;
 

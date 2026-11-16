@@ -56,6 +56,10 @@ namespace nu
 
 		void CreateDepthBuffer();
 
+		void SetClearColor(const glm::vec3& clearColor) { m_clearColor = clearColor; }
+		const glm::vec3& GetClearColor() const { return m_clearColor; }
+
+
 		friend class TextRenderer;
 		friend class Texture;
 		friend class Shader;
@@ -73,9 +77,11 @@ namespace nu
 		SDL_GPUTexture* m_swapchainTexture = nullptr;
 
 		bool m_cameraEnabled = true;
-		Vector2 m_camera;
+		Vector2 m_camera{};
 
 		int m_width = 0;
 		int m_height = 0;
+
+		glm::vec3 m_clearColor{ 0 };
 	};
 }
