@@ -34,4 +34,13 @@ namespace nu
 		JSON_READ_NAME(value, "near_plane", nearPlane);
 		JSON_READ_NAME(value, "far_plane", farPlane);
 	}
+
+	void CameraComponent::UpdateGui()
+	{
+		RendererComponent::UpdateGui();
+
+		ImGui::SliderFloat("FOV", &fov, 0.1f, 180.0f);
+		ImGui::DragFloat("Near Plane", &nearPlane, 0.1f);
+		ImGui::DragFloat("Far Plane", &farPlane, 0.1f);
+	}
 }

@@ -13,6 +13,7 @@ namespace nu
 		void Draw(const Renderer& renderer) override;
 
 		void Read(const json::value_t& value) override;
+		void UpdateGui() override;
 
 		const glm::mat4x4& GetView() const		 { return m_view; }
 		const glm::mat4x4& GetProjection() const { return m_projection; }

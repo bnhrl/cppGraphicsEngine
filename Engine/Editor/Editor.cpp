@@ -129,6 +129,8 @@ namespace nu
 
 	void Editor::UpdateAssets()
 	{
+		ImGui::Begin("Assets");
 
+		ImGui::End();
 	}
 }

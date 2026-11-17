@@ -55,7 +55,7 @@ namespace nu
 		}
 
 		LightUniform lightUniform{};
-		lightUniform.ambient = glm::vec3{ 0.2f }; //ALL AMBIENT LIGHTS
+		lightUniform.ambient = m_ambientLight; //ALL AMBIENT LIGHTS
 
 		auto lights = GetActorsByTag("Light");
 		for (auto light : lights)

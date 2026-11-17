@@ -46,4 +46,12 @@ namespace nu
         JSON_READ_NAME(value, "speed", m_speed);
         JSON_READ_NAME(value, "sensitivity", m_sensitivity);
     }
+
+    void CameraControllerComponent::UpdateGui()
+    {
+        Component::UpdateGui();
+
+        ImGui::SliderFloat("Speed", &m_speed, 0.1f, 100.f);
+        ImGui::SliderFloat("Sensitivity", &m_sensitivity, 0.1f, 1.f);
+    }
 }
