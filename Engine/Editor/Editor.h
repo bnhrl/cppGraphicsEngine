@@ -29,9 +29,13 @@ namespace nu
 		void SetActive(bool active = true) { m_active = active; }
 		bool GetActive() { return m_active; }
 
+		void SetSelected(class Object* selected) { m_selectedQueued = selected; }
+		const class Object* GetSelected() const { return m_selected; }
+
 	private:
 		bool m_active = true;
 		class Object* m_selected{ nullptr };
+		class Object* m_selectedQueued{ nullptr };
 
 		void UpdateHierarchy(class Scene& scene);
 		void UpdateInspector();

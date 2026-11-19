@@ -10,4 +10,8 @@ namespace nu
 	{
 
 	}
+	void MaterialComponent::UpdateGui()
+	{
+		
+	}
 }

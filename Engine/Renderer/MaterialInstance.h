@@ -24,6 +24,7 @@ namespace nu
 		const MaterialData& GetData() const { return m_data; }
 
 		const Material& GetMaterial() const { return *m_material; }
+		void UpdateGui() override;
 
 	private:
 		res_t<Material> m_material;

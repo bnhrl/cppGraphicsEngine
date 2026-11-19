@@ -58,4 +58,18 @@ namespace nu
 		}
 
 	}
+	void ModelComponent::UpdateGui()
+	{
+		ImGui::SeparatorText("Materials");
+		for (auto& material : m_materials)
+		{
+			ImGui::PushID(material.get());
+			auto& editor = Engine::Instance().GetEditor();
+			if (ImGui::Selectable(material->GetName().c_str(), editor.GetSelected() == material.get()))
+			{
+				editor.SetSelected(material.get());
+			}
+			ImGui::PopID();
+		}
+	}
 }

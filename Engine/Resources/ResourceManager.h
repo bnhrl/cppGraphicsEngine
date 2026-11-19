@@ -17,6 +17,7 @@ namespace nu
 		template<typename T, typename ... Args>
 			requires std::derived_from<T, Resource>
 		res_t<T> GetWithID(const std::string& id, const std::string& name, Args&& ... args);
+		const auto& GetAll() { return m_resources; }
 
 		void Clear() { m_resources.clear(); }
 
@@ -59,6 +60,7 @@ namespace nu
 		}
 
 		// store resource in map
+		resource->SetName(name);
 		m_resources[name] = resource;
 
 		return resource;

@@ -143,6 +143,23 @@
           "materials": [ "materials/brick.instance.json" ]
         }
       ]
+    },
+    {
+      "name": "Plane",
+      "type": "Actor",
+      "active": true,
+      "transform": {
+        "position": [ 0.0, -3.0, 0.0 ],
+        "rotation": [ 0, 0, 0 ],
+        "scale": [ 2.0, 2.0, 2.0 ]
+      },
+      "components": [
+        {
+          "type": "ModelComponent",
+          "model": "models/plane.obj",
+          "materials": [ "materials/ground.instance.json" ]
+        }
+      ]
     }
   ]
 }

@@ -1,9 +1,10 @@
 {
 	"type": "material_instance",
-	"material": "materials/phong.material.json",
-	"tiling": [ 1, 1 ],
+	"material": "materials/multi.material.json",
+	"tiling": [ 5, 5 ],
 	"textures": {
-		"base1_map": "textures/rock.png",
-		"base2_map": "textures/grass.png"
+		"base1_map": "textures/grass.png",
+		"base2_map": "textures/brick_diffuse.png",
+		"base3_map": "textures/lava_specular.png"
 	}
 }

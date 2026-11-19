@@ -3,6 +3,7 @@
 #include "Renderer/Renderer.h"
 #include "Framework/Scene.h"
 #include "Framework/Object.h"
+#include "Resources/ResourceManager.h"
 
 
 namespace nu
@@ -46,7 +47,7 @@ namespace nu
 		ImGui::DestroyContext();
 	}
 
-	void Editor::ProcessEvent(const SDL_Event& event) // TODO: figure out where to call this
+	void Editor::ProcessEvent(const SDL_Event& event) 
 	{
 		ImGui_ImplSDL3_ProcessEvent(&event);
 	}
@@ -104,7 +105,6 @@ namespace nu
 		for (auto& actor : scene.GetActors())
 		{
 			ImGui::PushID(actor.get());
-			//ImGui::Text("%s", actor->GetName().c_str());
 			if (ImGui::Selectable(actor->GetName().c_str(), m_selected == actor.get()))
 			{
 				m_selected = actor.get();
@@ -119,6 +119,11 @@ namespace nu
 	{
 		ImGui::Begin("Inspector");
 
+		if (m_selectedQueued) {
+			m_selected = m_selectedQueued;
+			m_selectedQueued = nullptr;
+			std::cout<<"aaaaaaaa";
+		}
 		if (m_selected)
 		{
 			m_selected->UpdateGui();
@@ -130,6 +135,16 @@ namespace nu
 	void Editor::UpdateAssets()
 	{
 		ImGui::Begin("Assets");
+
+		for (auto& resource : Resources().GetAll())
+		{
+			ImGui::PushID(resource.second.get());
+			if (ImGui::Selectable(resource.second->GetName().c_str(), m_selected == resource.second.get()))
+			{
+				m_selected = resource.second.get();
+			}
+			ImGui::PopID();
+		}
 
 		ImGui::End();
 	}

@@ -11,6 +11,7 @@ namespace nu
 
 		virtual void Draw(const Renderer& renderer) override;
 		virtual void Read(const json::value_t& value) override;
+		void UpdateGui() override;
 
 	private:
 		res_t<Model> m_model;
