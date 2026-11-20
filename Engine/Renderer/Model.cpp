@@ -4,6 +4,7 @@
 #include "Resources/ResourceManager.h"
 #include "Renderer/Texture.h"
 #include "Core/File.h"
+#include "Engine.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -224,12 +225,38 @@ namespace nu
 			aiString name;
 			source->Get(AI_MATKEY_NAME, name);
 
+			instance.SetName(name.C_Str());
+
 			const MaterialData& data = instance.GetData();
 			std::cout << "  [" << i << "] " << name.C_Str()
 				<< " | color: " << data.baseColor.r << ", " << data.baseColor.g << ", " << data.baseColor.b << ", " << data.baseColor.a
 				<< " | shininess: " << data.shininess
 				<< " | texture: " << (path.length > 0 ? path.C_Str() : "none")
 				<< std::endl;
+		}
+	}
+
+	void Model::UpdateGui()
+	{
+		Resource::UpdateGui();
+
+		auto& editor = Engine::Instance().GetEditor();
+
+		ImGui::SeparatorText("Meshes");
+		for (size_t i = 0; i < m_meshes.size(); i++)
+		{
+			ImGui::Text("Mesh [%d]: Material[%d]", i, m_meshes[i].materialIndex);
+		}
+
+		ImGui::SeparatorText("Materials");
+		for (auto& material : m_materials)
+		{
+			ImGui::PushID(&material);
+			if (ImGui::Selectable(material.GetName().c_str(), editor.GetSelected() == &material))
+			{
+				editor.SetSelected(&material);
+			}
+			ImGui::PopID();
 		}
 	}
 }

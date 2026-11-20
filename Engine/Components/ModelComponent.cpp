@@ -60,11 +60,23 @@ namespace nu
 	}
 	void ModelComponent::UpdateGui()
 	{
+		auto& editor = Engine::Instance().GetEditor();
+
+		ImGui::SeparatorText("Model");
+		if (m_model)
+		{
+			ImGui::PushID(m_model.get());
+			if (ImGui::Selectable(m_model->GetName().c_str(), editor.GetSelected() == m_model.get()))
+			{
+				editor.SetSelected(m_model.get());
+			}
+			ImGui::PopID();
+		}
+
 		ImGui::SeparatorText("Materials");
 		for (auto& material : m_materials)
 		{
 			ImGui::PushID(material.get());
-			auto& editor = Engine::Instance().GetEditor();
 			if (ImGui::Selectable(material->GetName().c_str(), editor.GetSelected() == material.get()))
 			{
 				editor.SetSelected(material.get());

@@ -81,4 +81,15 @@ namespace nu
 		auto it = std::find(m_textureSlots.begin(), m_textureSlots.end(), name);
 		return (it != m_textureSlots.end()) ? (int)std::distance(m_textureSlots.begin(), it) : -1;
 	}
+	void Material::UpdateGui()
+	{
+		ImGui::Text("Vertex Shader: %s", m_vertexShader->GetName().c_str());
+		ImGui::Text("Fragment Shader: %s", m_fragmentShader->GetName().c_str());
+		
+		ImGui::SeparatorText("Texture Slots");
+		for (size_t i = 0; i < m_textureSlots.size(); i++)
+		{
+			ImGui::Text("TextureSlot [%d] - %s", i + 1, m_textureSlots[i].c_str());
+		}
+	}
 }

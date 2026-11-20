@@ -1,8 +1,8 @@
 {
 	"type": "material_instance",
 	"material": "materials/phong.material.json",
-	"tiling": [ 1, 1 ],
-	"shininess": 32.0,
+	"tiling": [ 3, 3 ],
+	"shininess": 128.0,
 	"textures": {
 		"base_map": "textures/brick_diffuse.png",
 		"specular_map": "textures/brick_specular.png"

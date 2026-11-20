@@ -35,6 +35,7 @@ struct Input
     float2 texcoord : TEXTCOORD0;
     float3 worldPosition : TEXCOORD1;
     float3 normal : TEXCOORD2;
+    float3 tangent : TEXCOORD3;
 };
 
 struct Output
