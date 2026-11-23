@@ -54,6 +54,7 @@ namespace nu
 		JSON_READ_NAME(document, "specular_color", m_data.specularColor);
 		JSON_READ_NAME(document, "shininess", m_data.shininess);
 		JSON_READ_NAME(document, "emissive_color", m_data.emissiveColor);
+		JSON_READ_NAME(document, "normal_strength", m_data.normalStrength);
 		JSON_READ_NAME(document, "tiling", m_data.tiling);
 		JSON_READ_NAME(document, "offset", m_data.offset);
 
@@ -125,6 +126,7 @@ namespace nu
 		ImGui::ColorEdit4("Specular Color", glm::value_ptr(m_data.specularColor));
 		ImGui::SliderFloat("Shininess", &m_data.shininess, 0, 256);
 		ImGui::ColorEdit4("Emissive Color", glm::value_ptr(m_data.emissiveColor));
+		ImGui::SliderFloat("Normal Strength", &m_data.normalStrength, 0, 5);
 		ImGui::DragFloat2("Tiling", glm::value_ptr(m_data.tiling));
 		ImGui::DragFloat2("Offset", glm::value_ptr(m_data.offset));
 		ImGui::SeparatorText("Textures");

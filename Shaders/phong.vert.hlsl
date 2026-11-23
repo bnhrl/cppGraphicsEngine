@@ -47,7 +47,7 @@ Output main(Input input)
     output.position = mul(frame.viewProjection, float4(output.worldPosition, 1.0f));
     
     output.normal = normalize(mul((float3x3) object.normalMatrix, input.normal));
-    output.tangent = normalize(mul((float3x3) object.normalMatrix, input.tangent));
+    output.tangent = normalize(mul((float3x3) object.model, input.tangent));
     
     return output;
 }

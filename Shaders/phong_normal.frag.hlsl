@@ -54,13 +54,21 @@ Output main(Input input)
     float3 emissive = emissive_texture.Sample(emissive_sampler, input.texcoord).rgb;
     
     float4 albedo = base_texture.Sample(base_sampler, input.texcoord) * material.color;
-    float3 diffuse = lights.ambient;
     float3 specular = 0.0;
+    float3 normal = normal_texture.Sample(normal_sampler, input.texcoord).rgb * 2.0 - 1.0;
+    normal *= material.normalStrength;
+    float3 diffuse = lights.ambient;
     
-    float3 n = normalize(input.normal);
+    float3 nNormal = normalize(input.normal);
+    float3 t = normalize(input.tangent - nNormal * dot(input.tangent, nNormal));
+    float3 b = cross(nNormal, t);
+    float3x3 tbn = float3x3(t, b, nNormal);
+    float3 n = normalize(mul(normal, tbn));
+    
     float3 v = normalize(frame.cameraPosition - input.worldPosition);
     for (uint i = 0; i < lights.numLights; i++)
     {
+        
         calculateLighting(lights.lights[i], material, input.worldPosition, n, v, diffuse, specular);
     }
     

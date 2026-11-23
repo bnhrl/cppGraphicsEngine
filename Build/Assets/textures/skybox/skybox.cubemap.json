@@ -1,0 +1,10 @@
+{
+  "faces": {
+    "right": "skybox/posx.jpg",
+    "left": "skybox/negx.jpg",
+    "top": "skybox/posy.jpg",
+    "bottom": "skybox/negy.jpg",
+    "front": "skybox/posz.jpg",
+    "back": "skybox/negz.jpg"
+  }
+}

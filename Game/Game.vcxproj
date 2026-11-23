@@ -193,6 +193,7 @@
     <None Include="..\Build\Assets\materials\multi.material.json" />
     <None Include="..\Build\Assets\materials\ogre.instance.json" />
     <None Include="..\Build\Assets\materials\phong.material.json" />
+    <None Include="..\Build\Assets\materials\phong_normal.material.json" />
     <None Include="..\Build\Assets\materials\squirrel.instance.json" />
     <None Include="..\Build\Assets\scenes\scene.json" />
   </ItemGroup>

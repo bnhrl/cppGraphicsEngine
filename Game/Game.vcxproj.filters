@@ -11,6 +11,9 @@
     <Filter Include="Assets\Materials">
       <UniqueIdentifier>{6ca7eba8-d18d-4489-91a1-c9a59717e9cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\Textures">
+      <UniqueIdentifier>{8e29d6ff-e484-4966-ba7d-8d8191739c13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -38,6 +41,9 @@
       <Filter>Assets\Materials</Filter>
     </None>
     <None Include="..\Build\Assets\materials\brick.instance.json">
+      <Filter>Assets\Materials</Filter>
+    </None>
+    <None Include="..\Build\Assets\materials\phong_normal.material.json">
       <Filter>Assets\Materials</Filter>
     </None>
   </ItemGroup>
